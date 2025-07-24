@@ -11,7 +11,11 @@
     "sourceMap": true,
     // 👉 Agrega estas dos para mejores tipos:
     "types": ["node"],
-    "typeRoots": ["./node_modules/@types"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "../node_modules/@types",
+      "../../node_modules/@types"
+    ],
     // Opcional, pero recomendado para proyectos serios:
     "strict": true,
     "forceConsistentCasingInFileNames": true,
