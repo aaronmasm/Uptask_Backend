@@ -113,7 +113,7 @@ export class AuthController {
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         ...(maxAge ? { maxAge } : {}),
         path: "/",
-        // No usamos "domain" para que la cookie funcione correctamente en desarrollo y producción
+        domain: process.env.COOKIE_DOMAIN,
       });
 
       // Respondemos con un mensaje o los datos que necesites
