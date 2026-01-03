@@ -10,6 +10,8 @@ import cookieParser from "cookie-parser";
 
 import helmet from "helmet";
 
+import { csrfExclusion } from "./middleware/csrf";
+
 // Importamos una configuración personalizada de CORS desde el archivo cors.ts
 import { corsConfig } from "./config/cors";
 
@@ -43,6 +45,9 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 app.use(cookieParser());
+
+// Aplicamos protección CSRF
+app.use(csrfExclusion);
 
 // Registramos el archivo de rutas para proyectos
 // Todas las rutas definidas en projectRoutes estarán disponibles bajo el prefijo /api/projects

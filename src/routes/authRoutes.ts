@@ -79,6 +79,10 @@ router.post(
 
 router.get("/user", authenticate, AuthController.user);
 
+router.get("/csrf-token", (req, res) => {
+  res.json({ csrfToken: req.csrfToken?.() || "" });
+});
+
 /** Profile */
 router.patch(
   "/profile",

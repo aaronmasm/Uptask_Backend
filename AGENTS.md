@@ -23,6 +23,14 @@
 - Backend Express v5 + Mongoose (MongoDB)
 - Autenticación JWT almacenada en cookies HTTP-only con SameSite
 - Validación de requests usando express-validator
-- Middleware de seguridad: Helmet (headers), CORS, cookie-parser
+- Middleware de seguridad: Helmet (headers), CORS, cookie-parser, CSRF
+- Protección CSRF con double-submit cookie pattern (token en cookie + body)
 - Controladores manejan lógica de negocio, rutas definen endpoints
 - Variables de entorno para configuración (PORT, DATABASE_URL, etc.)
+
+## Seguridad CSRF
+
+- Obtener token CSRF: GET /api/auth/csrf-token
+- Incluir token en requests POST/PUT/DELETE: body.\_csrf o header x-csrf-token
+- Rutas públicas (login, registro) excluidas de CSRF
+- Tokens válidos por 1 hora, renovados automáticamente
