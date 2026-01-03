@@ -26,9 +26,29 @@ export const csrfProtection = (
     const cookieToken = req.cookies.csrfToken;
     const bodyToken = req.body?._csrf || req.headers["x-csrf-token"];
 
-    if (!cookieToken || !bodyToken || cookieToken !== bodyToken) {
+    if (!cookieToken || !bodyToken) {
       res.status(403).json({
-        error: "Token CSRF inválido o faltante. Solicita un nuevo token.",
+        error: "Token CSRF faltante. Solicita un nuevo token.",
+      });
+      return;
+    }
+
+    try {
+      const cookieBuffer = Buffer.from(cookieToken, "hex");
+      const bodyBuffer = Buffer.from(bodyToken, "hex");
+
+      if (
+        cookieBuffer.length !== bodyBuffer.length ||
+        !crypto.timingSafeEqual(cookieBuffer, bodyBuffer)
+      ) {
+        res.status(403).json({
+          error: "Token CSRF inválido. Solicita un nuevo token.",
+        });
+        return;
+      }
+    } catch (error) {
+      res.status(403).json({
+        error: "Error al validar el token CSRF.",
       });
       return;
     }
@@ -38,16 +58,28 @@ export const csrfProtection = (
   if (!req.cookies.csrfToken) {
     const token = generateToken();
     res.cookie("csrfToken", token, {
-      httpOnly: false, // Debe ser accesible por JavaScript para el frontend
+      httpOnly: true, // Mayor seguridad, no accesible por JS
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      sameSite: "lax", // Permitir en navegación inicial pero proteger contra cross-site
       maxAge: 60 * 60 * 1000, // 1 hora
     });
   }
 
   // Agregar método para obtener token en responses
   req.csrfToken = () => {
-    return req.cookies.csrfToken || generateToken();
+    const token = req.cookies.csrfToken || generateToken();
+
+    // Si el token es nuevo y no se ha establecido la cookie aún, la establecemos
+    if (!req.cookies.csrfToken) {
+      res.cookie("csrfToken", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 1000,
+      });
+    }
+
+    return token;
   };
 
   next();
