@@ -8,6 +8,8 @@ import morgan from "morgan";
 
 import cookieParser from "cookie-parser";
 
+import helmet from "helmet";
+
 // Importamos una configuración personalizada de CORS desde el archivo cors.ts
 import { corsConfig } from "./config/cors";
 
@@ -29,6 +31,9 @@ const app = express();
 // Aplicamos el middleware de CORS con la configuración personalizada importada
 // Esto controla qué frontend puede hacer peticiones a nuestra API
 app.use(cors(corsConfig));
+
+// Aplicamos Helmet para headers de seguridad (deshabilita X-Powered-By y otros)
+app.use(helmet());
 
 // logging
 app.use(morgan("dev"));
